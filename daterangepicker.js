@@ -151,6 +151,7 @@
         }
 
         this.container = $(options.template).appendTo(this.parentEl);
+        this.container.prop('datepicker', this)
 
         //
         // handle all the possible options overriding defaults
@@ -1837,6 +1838,12 @@
             this.container.remove();
             this.element.off('.daterangepicker');
             this.element.removeData();
+        },
+
+        highlightDate: function (date) {
+            this.setStartDate(date.startOf('day'))
+            this.setEndDate(date.startOf('day'))
+            this.updateView(true)
         }
 
     };
@@ -1847,7 +1854,9 @@
             var el = $(this);
             if (el.data('daterangepicker'))
                 el.data('daterangepicker').remove();
-            el.data('daterangepicker', new DateRangePicker(el, implementOptions, callback));
+            var _datepicker = new DateRangePicker(el, implementOptions, callback)
+            el.data('daterangepicker', _datepicker);
+            el.prop('datepicker', _datepicker);
         });
         return this;
     };
