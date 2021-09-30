@@ -53,6 +53,7 @@
         this.alwaysShowCalendars = false;
         this.ranges = {};
         this.applyOnEnter = true;
+        this.disableCancel = false;
         this.appendToElementParent = false;
         this.showOnFocus = true;
         this.dropdownAdditionalClass = "";
@@ -307,6 +308,10 @@
 
         if (typeof options.applyOnEnter === 'boolean') {
             this.applyOnEnter = options.applyOnEnter;
+        }
+
+        if (typeof options.disableCancel === 'boolean') {
+            this.disableCancel = options.disableCancel;
         }
 
         if (typeof options.showOnFocus === 'boolean') {
@@ -1584,6 +1589,8 @@
         },
 
         clickCancel: function(e) {
+            if (this.disableCancel) return;
+
             this.startDate = this.oldStartDate;
             this.endDate = this.oldEndDate;
             this.hide();
