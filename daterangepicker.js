@@ -549,6 +549,11 @@
         constructor: DateRangePicker,
 
         setStartDate: function(startDate) {
+            this.highlightedDate = null
+
+            if (!startDate) {
+                return;
+            }
             if (typeof startDate === 'string')
                 this.startDate = moment(startDate, this.locale.format);
 
@@ -943,11 +948,15 @@
                     }
 
                     //highlight the currently selected start date
-                    if (calendar[row][col].format('YYYY-MM-DD') == this.startDate.format('YYYY-MM-DD'))
+                    if (this.highlightedDate && calendar[row][col].format('YYYY-MM-DD') == this.highlightedDate.format('YYYY-MM-DD'))
+                        classes.push('active', 'highlighted-date');
+
+                    //highlight the currently selected start date
+                    if (!this.highlightedDate && calendar[row][col].format('YYYY-MM-DD') == this.startDate.format('YYYY-MM-DD'))
                         classes.push('active', 'start-date');
 
                     //highlight the currently selected end date
-                    if (this.endDate != null && calendar[row][col].format('YYYY-MM-DD') == this.endDate.format('YYYY-MM-DD'))
+                    if (!this.highlightedDate &&this.endDate != null && calendar[row][col].format('YYYY-MM-DD') == this.endDate.format('YYYY-MM-DD'))
                         classes.push('active', 'end-date');
 
                     //highlight dates in-between the selected dates
@@ -1841,9 +1850,8 @@
         },
 
         highlightDate: function (date) {
-            this.setStartDate(date.startOf('day'))
-            this.setEndDate(date.startOf('day'))
-            this.updateView(true)
+            this.highlightedDate = date.startOf('day')
+            this.updateView()
         }
 
     };
