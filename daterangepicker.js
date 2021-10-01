@@ -152,6 +152,7 @@
         }
 
         this.container = $(options.template).appendTo(this.parentEl);
+        this.container.prop('datepicker', this)
 
         //
         // handle all the possible options overriding defaults
@@ -553,6 +554,11 @@
         constructor: DateRangePicker,
 
         setStartDate: function(startDate) {
+            this.highlightedDate = null
+
+            if (!startDate) {
+                return;
+            }
             if (typeof startDate === 'string')
                 this.startDate = moment(startDate, this.locale.format);
 
@@ -947,11 +953,15 @@
                     }
 
                     //highlight the currently selected start date
-                    if (calendar[row][col].format('YYYY-MM-DD') == this.startDate.format('YYYY-MM-DD'))
+                    if (this.highlightedDate && calendar[row][col].format('YYYY-MM-DD') == this.highlightedDate.format('YYYY-MM-DD'))
+                        classes.push('active', 'highlighted-date');
+
+                    //highlight the currently selected start date
+                    if (!this.highlightedDate && calendar[row][col].format('YYYY-MM-DD') == this.startDate.format('YYYY-MM-DD'))
                         classes.push('active', 'start-date');
 
                     //highlight the currently selected end date
-                    if (this.endDate != null && calendar[row][col].format('YYYY-MM-DD') == this.endDate.format('YYYY-MM-DD'))
+                    if (!this.highlightedDate &&this.endDate != null && calendar[row][col].format('YYYY-MM-DD') == this.endDate.format('YYYY-MM-DD'))
                         classes.push('active', 'end-date');
 
                     //highlight dates in-between the selected dates
@@ -1844,6 +1854,11 @@
             this.container.remove();
             this.element.off('.daterangepicker');
             this.element.removeData();
+        },
+
+        highlightDate: function (date) {
+            this.highlightedDate = date.startOf('day')
+            this.updateView()
         }
 
     };
@@ -1854,7 +1869,9 @@
             var el = $(this);
             if (el.data('daterangepicker'))
                 el.data('daterangepicker').remove();
-            el.data('daterangepicker', new DateRangePicker(el, implementOptions, callback));
+            var _datepicker = new DateRangePicker(el, implementOptions, callback)
+            el.data('daterangepicker', _datepicker);
+            el.prop('datepicker', _datepicker);
         });
         return this;
     };
