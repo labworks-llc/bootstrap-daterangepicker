@@ -533,7 +533,9 @@
             this.element.on('click.daterangepicker', $.proxy(this.toggle, this));
             this.element.on('keydown.daterangepicker', $.proxy(this.toggle, this));
         }
-        $('body').keydown($.proxy(this.bodyKeydown, this));
+        if (!this.disableCancel) {
+            $('body').keydown($.proxy(this.bodyKeydown, this));
+        }
 
         //
         // if attached to a text input, set the initial value
@@ -1589,8 +1591,6 @@
         },
 
         clickCancel: function(e) {
-            if (this.disableCancel) return;
-
             this.startDate = this.oldStartDate;
             this.endDate = this.oldEndDate;
             this.hide();
