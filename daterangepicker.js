@@ -1270,6 +1270,7 @@
 
             this.updateView();
             this.container.show();
+            this.element.trigger('move.daterangepicker', this);
             this.move();
             this.element.trigger('show.daterangepicker', this);
             this.isShowing = true;
