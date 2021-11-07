@@ -62,6 +62,7 @@
         this.dblClickWatcherIsActive = false;
         this.dblClickWatcherTime = 500;
         this.listenToDblClicks = false;
+        this.adjustDatePickerVertically = false
 
         this.opens = 'right';
         if (this.element.hasClass('pull-right'))
@@ -480,6 +481,10 @@
         //swap the position of the predefined ranges if opens right
         if (typeof options.ranges !== 'undefined' && this.opens == 'right') {
             this.container.find('.ranges').prependTo( this.container.find('.calendar.left').parent() );
+        }
+
+        if (typeof options.adjustDatePickerVertically === 'boolean') {
+            this.adjustDatePickerVertically = options.adjustDatePickerVertically;
         }
 
         //apply CSS classes and labels to buttons
@@ -1270,7 +1275,14 @@
 
             this.updateView();
             this.container.show();
-            this.element.trigger('move.daterangepicker', this);
+            if (this.adjustDatePickerVertically) {
+                const bounding = this.element[0].getBoundingClientRect()
+                if (bounding.y < document.body.clientHeight/2) {
+                    this.drops = 'down'
+                } else {
+                    this.drops = 'up'
+                }
+            }
             this.move();
             this.element.trigger('show.daterangepicker', this);
             this.isShowing = true;
