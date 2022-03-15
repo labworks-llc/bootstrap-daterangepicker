@@ -63,6 +63,7 @@
         this.dblClickWatcherTime = 500;
         this.listenToDblClicks = false;
         this.adjustDatePickerVertically = false
+        this.focusAfterHide = false; // focus after select, apply or cancel action
 
         this.opens = 'right';
         if (this.element.hasClass('pull-right'))
@@ -326,6 +327,10 @@
         if (typeof options.listenToDblClicks === 'boolean')
             this.listenToDblClicks = options.listenToDblClicks;
 
+        if (typeof options.focusAfterHide === 'boolean') {
+            this.focusAfterHide = options.focusAfterHide;
+        }
+
         // update day names order to firstDay
         if (this.locale.firstDay != 0) {
             var iterator = this.locale.firstDay;
@@ -531,7 +536,7 @@
             });
             if (this.showOnFocus) {
                 this.element.on({
-                    'focus.daterangepicker': $.proxy(this.show, this),
+                    'focus.daterangepicker': $.proxy(this.showByFocus, this),
                 });
             }
         } else {
@@ -1247,6 +1252,11 @@
             }
         },
 
+        showByFocus: function(e) {
+            if(!this.showOnFocus) return;
+            this.show(e);
+        },
+
         show: function(e) {
             if (this.isShowing) return;
 
@@ -1557,7 +1567,7 @@
             if (this.singleDatePicker) {
                 this.setEndDate(this.startDate);
                 if (!this.timePicker)
-                    this.clickApply();
+                    this.clickApply(e);
             }
 
             this.updateView(false, true);
@@ -1598,9 +1608,24 @@
             }
         },
 
+        silentFocus: function(e) {
+            if (!this.focusAfterHide) {
+                return;
+            }
+            var showOnFocus = this.showOnFocus;
+            this.showOnFocus = false;
+            this.element.focus();
+            this.showOnFocus = showOnFocus;
+            if (e) {
+                e.preventDefault(); // To avoid event bubbling to document and loss focus
+                e.stopPropagation();
+            }
+        },
+
         clickApply: function(e) {
             this.hide();
             this.element.trigger('apply.daterangepicker', this);
+            this.silentFocus(e);
         },
 
         clickCancel: function(e) {
@@ -1608,6 +1633,7 @@
             this.endDate = this.oldEndDate;
             this.hide();
             this.element.trigger('cancel.daterangepicker', this);
+            this.silentFocus();
         },
 
         monthOrYearChanged: function(e) {
