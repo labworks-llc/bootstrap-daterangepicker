@@ -333,7 +333,7 @@
         }
 
         if (typeof options.fillAfterBlur === 'boolean') {
-		        this.fillAfterBlur = options.fillAfterBlur;
+            this.fillAfterBlur = options.fillAfterBlur;
         }
 
         // update day names order to firstDay
@@ -1316,9 +1316,9 @@
 
             //if a new date range was selected, invoke the user callback function
             if ((!this.startDate.isSame(this.oldStartDate) || !this.endDate.isSame(this.oldEndDate))
-							  || ((this.singleDatePicker && !this.element.val() && this.fillAfterBlur))) {
-							this.callback(this.startDate.clone(), this.endDate.clone(), this.chosenLabel);
-						}
+                 || ((this.singleDatePicker && !this.element.val() && this.fillAfterBlur))) {
+                this.callback(this.startDate.clone(), this.endDate.clone(), this.chosenLabel);
+            }
 
             //if picker is attached to a text input, update it
             this.updateElement();
