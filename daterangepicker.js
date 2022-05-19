@@ -1315,12 +1315,10 @@
             }
 
             //if a new date range was selected, invoke the user callback function
-            if (!this.startDate.isSame(this.oldStartDate) || !this.endDate.isSame(this.oldEndDate))
-                this.callback(this.startDate.clone(), this.endDate.clone(), this.chosenLabel);
-
-            if (this.singleDatePicker && !this.element.val() && this.fillAfterBlur) {
-                this.callback(this.startDate.clone(), this.endDate.clone(), this.chosenLabel);
-            }
+            if ((!this.startDate.isSame(this.oldStartDate) || !this.endDate.isSame(this.oldEndDate))
+							  || ((this.singleDatePicker && !this.element.val() && this.fillAfterBlur))) {
+							this.callback(this.startDate.clone(), this.endDate.clone(), this.chosenLabel);
+						}
 
             //if picker is attached to a text input, update it
             this.updateElement();
