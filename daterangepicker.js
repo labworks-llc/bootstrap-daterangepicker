@@ -64,6 +64,7 @@
         this.listenToDblClicks = false;
         this.adjustDatePickerVertically = false
         this.focusAfterHide = false; // focus after select, apply or cancel action
+        this.fillAfterBlur = false; // fill current date/time value if input empty after blur (only for singleDatePicker = true)
 
         this.opens = 'right';
         if (this.element.hasClass('pull-right'))
@@ -329,6 +330,10 @@
 
         if (typeof options.focusAfterHide === 'boolean') {
             this.focusAfterHide = options.focusAfterHide;
+        }
+
+        if (typeof options.fillAfterBlur === 'boolean') {
+		        this.fillAfterBlur = options.fillAfterBlur;
         }
 
         // update day names order to firstDay
@@ -657,6 +662,8 @@
                     else {
                         this.startDate = currentTime.startOf('minute');
                         this.endDate = currentTime.endOf('minute');
+                        this.oldStartDate = this.startDate.clone();
+                        this.oldEndDate = this.endDate.clone();
                     }
                 }
                 this.renderTimePicker('left');
@@ -1310,6 +1317,10 @@
             //if a new date range was selected, invoke the user callback function
             if (!this.startDate.isSame(this.oldStartDate) || !this.endDate.isSame(this.oldEndDate))
                 this.callback(this.startDate.clone(), this.endDate.clone(), this.chosenLabel);
+
+            if (this.singleDatePicker && !this.element.val() && this.fillAfterBlur) {
+                this.callback(this.startDate.clone(), this.endDate.clone(), this.chosenLabel);
+            }
 
             //if picker is attached to a text input, update it
             this.updateElement();
