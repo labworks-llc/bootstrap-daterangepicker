@@ -549,7 +549,8 @@
             this.element.on('keydown.daterangepicker', $.proxy(this.toggle, this));
         }
         if (!this.disableCancel) {
-            $('body').keydown($.proxy(this.bodyKeydown, this));
+            this._bodyKeydownHandler = $.proxy(this.bodyKeydown, this);
+            $('body').keydown(this._bodyKeydownHandler);
         }
 
         //
@@ -1899,9 +1900,62 @@
         },
 
         remove: function() {
-            this.container.remove();
-            this.element.off('.daterangepicker');
-            this.element.removeData();
+            if (this.singleClickTimeout) {
+				clearTimeout(this.singleClickTimeout);
+				this.singleClickTimeout = null;
+			}
+        
+			if (this.id) {
+				$(document)
+					.off(`mousedown.daterangepicker.${this.id}`)
+					.off(`touchend.daterangepicker.${this.id}${this.id}`)
+					.off(`click.daterangepicker.${this.id}${this.id}`, '[data-toggle=dropdown]')
+					.off(`focusin.daterangepicker.${this.id}${this.id}`);
+
+				$(window).off(`resize.daterangepicker.${this.id}`);
+				this.id = null;
+			}
+
+			if (this._bodyKeydownHandler) {
+				$('body').off('keydown', this._bodyKeydownHandler);
+			}
+
+			if (this.container) {
+				this.container.find('.calendar').off('.daterangepicker');
+				this.container.find('.ranges').off('.daterangepicker');
+				this.container.removeProp('datepicker');
+				this.container.remove();
+				this.container = null;
+			}
+
+			if (this.element) {
+				this.element.off('.daterangepicker');
+				this.element.removeData('daterangepicker');
+				this.element.removeData();
+				this.element.removeProp('datepicker');
+			}
+
+			this._outsideClickProxy = null;
+			this.callback = null;
+			this.bodyKeydown = null;
+			this.element = null;
+			this.parentEl = null;
+			this.clickPrev = null;
+			this.clickNext = null;
+			this.clickDate = null;
+			this.hoverDate = null;
+			this.updateFormInputs = null;
+			this.monthOrYearChanged = null;
+			this.timeChanged = null;
+			this.showCalendars = null;
+			this.formInputsFocused = null;
+			this.formInputsBlurred = null;
+			this.formInputsChanged = null;
+			this.formInputsKeydown = null;
+			this.clickApply = null;
+			this.clickCancel = null;
+			this.clickRange = null;
+			this.hoverRange = null;
         },
 
         highlightDate: function (date) {
